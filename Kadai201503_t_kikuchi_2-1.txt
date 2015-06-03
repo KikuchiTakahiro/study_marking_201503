@@ -1,0 +1,40 @@
+( 
+  SELECT
+    t_sehdules.EVENT_ID 
+    , t_events.EVENT_NAME
+    , t_sehdules.UID AS SCHEDULE_ID
+    , t_sehdules.DUE_DATE 
+  FROM
+    schedules t_sehdules 
+    LEFT OUTER JOIN events t_events 
+      ON t_sehdules.EVENT_ID = t_events.UID 
+  WHERE
+    t_sehdules.DUE_DATE >= (SELECT MAX(SYSDATE) FROM dummy_sysdate) 
+  GROUP BY
+    t_sehdules.EVENT_ID 
+  ORDER BY
+    t_sehdules.DUE_DATE
+    , t_sehdules.EVENT_ID
+) 
+UNION ( 
+  SELECT
+    e.UID AS EVENT_ID
+    , e.EVENT_NAME AS EVENT_NAME
+    , NULL AS SCEDULE_ID
+    , NULL AS DUE_DATE 
+  FROM
+    events e 
+  WHERE
+    NOT EXISTS ( 
+      SELECT
+        EVENT_ID 
+      FROM
+        schedules 
+      WHERE
+        e.UID = EVENT_ID
+    )
+) 
+ORDER BY
+  DUE_DATE IS NULL ASC
+  , DUE_DATE ASC
+  , SCHEDULE_ID ASC; 

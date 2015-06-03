@@ -1,0 +1,27 @@
+SELECT
+  e.uid AS EMPLOYEE_ID
+  , e.employee_name AS EMPLOYEE_NAME
+  , dummy.section_name AS SECTION_NAME
+  , currently_sh.max_start_date AS START_DATE 
+FROM
+  ( 
+    SELECT
+      employee_id AS employee_id
+      , MAX(start_date) AS max_start_date 
+    FROM
+      section_histories 
+    GROUP BY
+      employee_id
+  ) currently_sh 
+  LEFT JOIN section_histories dummy 
+    ON currently_sh.employee_id = dummy.employee_id 
+    AND currently_sh.max_start_date = dummy.start_date 
+  LEFT JOIN employees e 
+    ON currently_sh.employee_id = e.uid 
+WHERE
+  section_name = "IT" 
+ORDER BY
+  EMPLOYEE_ID; 
+
+
+

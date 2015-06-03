@@ -1,0 +1,28 @@
+SELECT
+  DATE_FORMAT(u.DATE, '%Y-%m-%d') AS DATE
+  , SUM(u.J_COUNT) AS JOINED_COUNT
+  , SUM(u.L_COUNT) AS LEFT_COUNT 
+FROM
+  ( 
+    SELECT
+      JOINED_DATE AS DATE
+      , 1 AS J_COUNT
+      , 0 AS L_COUNT 
+    FROM
+      users 
+    WHERE
+      JOINED_DATE IS NOT NULL 
+    UNION ALL 
+    SELECT
+      LEFT_DATE AS DATE
+      , 0 AS J_COUNT
+      , 1 AS L_COUNT 
+    FROM
+      users 
+    WHERE
+      LEFT_DATE IS NOT NULL
+  ) u 
+GROUP BY
+  DATE 
+ORDER BY
+  DATE; 
