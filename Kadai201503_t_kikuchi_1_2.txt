@@ -1,7 +1,33 @@
 SELECT
   DATE_FORMAT(u.DATE, '%Y-%m-%d') AS DATE
   , SUM(u.J_COUNT) AS JOINED_COUNT
-  , SUM(u.L_COUNT) AS LEFT_COUNT 
+  , SUM(u.L_COUNT) AS LEFT_COUNT
+  , ( 
+    SELECT
+      SUM(dummy.J_COUNT) - SUM(dummy.L_COUNT) 
+    FROM
+      ( 
+        SELECT
+          JOINED_DATE AS DUMMY_DATE
+          , 1 AS J_COUNT
+          , 0 AS L_COUNT 
+        FROM
+          users 
+        WHERE
+          JOINED_DATE IS NOT NULL 
+        UNION ALL 
+        SELECT
+          LEFT_DATE AS date
+          , 0 AS J_COUNT
+          , 1 AS L_COUNT 
+        FROM
+          users 
+        WHERE
+          LEFT_DATE IS NOT NULL
+      ) dummy 
+    WHERE
+      u.DATE >= dummy.DUMMY_DATE
+  ) AS USER_COUNT 
 FROM
   ( 
     SELECT
@@ -14,7 +40,7 @@ FROM
       JOINED_DATE IS NOT NULL 
     UNION ALL 
     SELECT
-      LEFT_DATE AS DATE
+      LEFT_DATE AS date
       , 0 AS J_COUNT
       , 1 AS L_COUNT 
     FROM
@@ -26,3 +52,6 @@ GROUP BY
   DATE 
 ORDER BY
   DATE; 
+
+
+
