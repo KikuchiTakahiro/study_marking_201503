@@ -13,7 +13,7 @@ FROM
     GROUP BY
       employee_id
   ) currently_sh 
-  LEFT JOIN section_histories dummy 
+  INNER JOIN section_histories dummy 
     ON currently_sh.employee_id = dummy.employee_id 
     AND currently_sh.max_start_date = dummy.start_date 
   LEFT JOIN employees e 
