@@ -16,7 +16,7 @@ FROM
   LEFT JOIN section_histories dummy 
     ON currently_sh.employee_id = dummy.employee_id 
     AND currently_sh.max_start_date = dummy.start_date 
-  LEFT JOIN employees e 
+  INNER JOIN employees e 
     ON currently_sh.employee_id = e.uid 
 WHERE
   section_name = "IT" 
